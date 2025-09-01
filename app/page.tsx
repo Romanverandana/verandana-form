@@ -1,7 +1,9 @@
+'use client'
+
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
 
-const Form = () => {
+export default function Home() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,9 +15,9 @@ const Form = () => {
     consent: false
   });
   
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<{id: number, file: File, progress: number}>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const tilesData = [
     { 
@@ -57,7 +59,7 @@ const Form = () => {
 
   // Walidacja formularza
   const validateForm = useCallback(() => {
-    const newErrors = {};
+    const newErrors: {[key: string]: string} = {};
     
     if (!formData.name.trim()) newErrors.name = 'Imię jest wymagane';
     if (!formData.email.trim()) newErrors.email = 'Email jest wymagany';
@@ -77,7 +79,7 @@ const Form = () => {
   }, [formData]);
 
   // Obsługa zmiany pól formularza
-  const handleInputChange = useCallback((field, value) => {
+  const handleInputChange = useCallback((field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -85,8 +87,8 @@ const Form = () => {
   }, [errors]);
 
   // Obsługa plików z walidacją
-  const handleFileChange = useCallback((event) => {
-    const files = Array.from(event.target.files);
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
     const maxFiles = 5;
     const maxFileSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/png', 'image/heic'];
@@ -115,18 +117,18 @@ const Form = () => {
     }));
     
     setSelectedFiles(prev => [...prev, ...newFiles]);
-    event.target.value = '';
+    if (event.target) event.target.value = '';
   }, [selectedFiles]);
 
-  const removeFile = useCallback((fileId) => {
+  const removeFile = useCallback((fileId: number) => {
     setSelectedFiles(prev => prev.filter(f => f.id !== fileId));
   }, []);
 
-  const handleTileSelect = useCallback((value) => {
+  const handleTileSelect = useCallback((value: string) => {
     handleInputChange('selectedType', value);
   }, [handleInputChange]);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
     if (!validateForm()) {
@@ -139,34 +141,28 @@ const Form = () => {
       const submitData = new FormData();
       
       Object.entries(formData).forEach(([key, value]) => {
-        submitData.append(key, value);
+        submitData.append(key, String(value));
       });
       
       selectedFiles.forEach(({ file }) => {
         submitData.append('files', file);
       });
 
-      const response = await fetch('/api/submit-form', {
-        method: 'POST',
-        body: submitData,
+      // Symulacja wysyłania - usuń to i dodaj prawdziwy endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      alert('Formularz został wysłany pomyślnie!');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        postal: '',
+        date: '',
+        selectedType: '',
+        comment: '',
+        consent: false
       });
-
-      if (response.ok) {
-        alert('Formularz został wysłany pomyślnie!');
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          postal: '',
-          date: '',
-          selectedType: '',
-          comment: '',
-          consent: false
-        });
-        setSelectedFiles([]);
-      } else {
-        throw new Error('Błąd wysyłania formularza');
-      }
+      setSelectedFiles([]);
     } catch (error) {
       console.error('Błąd:', error);
       alert('Wystąpił błąd podczas wysyłania formularza. Spróbuj ponownie.');
@@ -176,51 +172,405 @@ const Form = () => {
   };
 
   return (
-    <div className="shell font-body">
-      <style jsx>{`
-        .shell {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
+        
+        * {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 10px;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
         }
         
         h1 {
-          font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-size: 2.5rem;
+          font-family: 'Playfair Display', serif !important;
+          font-size: 33px !important;
           font-weight: 700;
           line-height: 1.2;
-          letter-spacing: -0.025em;
           margin-bottom: 0.75rem;
           color: #1f2937;
         }
         
         .sub {
-          font-size: 1rem;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
           font-weight: 400;
           line-height: 1.6;
           color: #6b7280;
           margin-bottom: 2rem;
-          letter-spacing: 0.01em;
         }
         
         .hint {
-          font-size: 0.875rem;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
           font-weight: 500;
           color: #374151;
           margin-bottom: 0.5rem;
           display: block;
-          letter-spacing: 0.025em;
         }
         
         input, textarea, select {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-size: 0.875rem;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
           font-weight: 400;
           line-height: 1.5;
-          letter-spacing: 0.01em;
           color: #1f2937;
+          padding: 8px 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 4px;
+          width: 100%;
+          box-sizing: border-box;
         }
         
         input::placeholder, textarea::placeholder {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
           color: #9ca3af;
           font-weight: 400;
+        }
+        
+        button {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 500;
+          padding: 8px 16px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          background-color: #3b82f6;
+          color: white;
+        }
+        
+        button:hover {
+          background-color: #2563eb;
+        }
+        
+        button:disabled {
+          background-color: #9ca3af;
+          cursor: not-allowed;
+        }
+        
+        .section-title {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 600;
+          margin: 20px 0 10px 0;
+        }
+        
+        .tiles {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 16px;
+          margin: 20px 0;
+        }
+        
+        .tile {
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 16px;
+          text-align: center;
+          background: white;
+          transition: all 0.2s;
+        }
+        
+        .tile:hover {
+          border-color: #3b82f6;
+        }
+        
+        .tile.selected {
+          border-color: #3b82f6;
+          background-color: #eff6ff;
+        }
+        
+        .tile .title {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 600;
+          margin: 8px 0 4px 0;
+        }
+        
+        .tile .desc {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 400;
+          color: #6b7280;
+        }
+        
+        .img-wrap {
+          width: 100%;
+          height: 120px;
+          position: relative;
+          margin-bottom: 8px;
+        }
+        
+        .grid.two {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 16px;
+          margin: 20px 0;
+        }
+        
+        .uploader {
+          border: 2px dashed #d1d5db;
+          border-radius: 8px;
+          padding: 20px;
+          text-align: center;
+          margin: 20px 0;
+        }
+        
+        .uploader p, .uploader small {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 400;
+          margin: 4px 0;
+        }
+        
+        .uploader strong {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 600;
+        }
+        
+        .file-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px;
+          border: 1px solid #e5e7eb;
+          border-radius: 4px;
+          margin: 4px 0;
+        }
+        
+        .file-name {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 400;
+        }
+        
+        .file-remove {
+          background: #ef4444;
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .consent {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          margin: 20px 0;
+        }
+        
+        .consent input {
+          width: auto;
+          margin: 0;
+        }
+        
+        .consent span {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 400;
+        }
+        
+        .error-message {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 400;
+          color: #ef4444;
+          display: block;
+          margin-top: 4px;
+        }
+        
+        .shell {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+      `}</style>
+
+      <div className="shell">
+        <h1>Otrzymaj darmową wycenę</h1>
+        <p className="sub">
+          PODAJ KILKA PODSTAWOWYCH INFORMACJI – PRZYGOTUJEMY KALKULACJĘ I SKONTAKTUJEMY SIĘ W CIĄGU 24H
+        </p>
+
+        <form id="verandana-form" onSubmit={handleSubmit}>
+          {/* Dane kontaktowe */}
+          <div className="grid two">
+            <div>
+              <label className="hint" htmlFor="name">Imię *</label>
+              <input 
+                id="name" 
+                type="text" 
+                placeholder="Wpisz swoje imię" 
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                required 
+              />
+              {errors.name && <span className="error-message">{errors.name}</span>}
+            </div>
+            
+            <div>
+              <label className="hint" htmlFor="email">E-mail *</label>
+              <input 
+                id="email" 
+                type="email" 
+                placeholder="Wpisz swój e-mail" 
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                required 
+              />
+              {errors.email && <span className="error-message">{errors.email}</span>}
+            </div>
+            
+            <div>
+              <label className="hint" htmlFor="phone">Telefon *</label>
+              <input 
+                id="phone" 
+                type="tel" 
+                placeholder="Wpisz swój numer telefonu" 
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                required 
+              />
+              {errors.phone && <span className="error-message">{errors.phone}</span>}
+            </div>
+            
+            <div>
+              <label className="hint" htmlFor="postal">Kod pocztowy *</label>
+              <input 
+                id="postal" 
+                type="text" 
+                placeholder="12-345" 
+                value={formData.postal}
+                onChange={(e) => handleInputChange('postal', e.target.value)}
+                required 
+              />
+              {errors.postal && <span className="error-message">{errors.postal}</span>}
+            </div>
+          </div>
+
+          {/* Termin */}
+          <div style={{ marginTop: "12px" }}>
+            <label className="hint" htmlFor="date">Preferowany termin rozpoczęcia montażu</label>
+            <input 
+              id="date" 
+              type="date" 
+              value={formData.date}
+              onChange={(e) => handleInputChange('date', e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+
+          {/* Kafelki */}
+          <div className="section-title">Wybierz typ konstrukcji, który Cię interesuje *</div>
+          {errors.selectedType && <span className="error-message">{errors.selectedType}</span>}
+          <div className="tiles">
+            {tilesData.map(tile => (
+              <button
+                key={tile.value}
+                type="button"
+                className={`tile ${formData.selectedType === tile.value ? "selected" : ""}`}
+                onClick={() => handleTileSelect(tile.value)}
+              >
+                <div className="img-wrap">
+                  <Image 
+                    src={tile.src} 
+                    alt={tile.alt} 
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes="200px"
+                  />
+                </div>
+                <div className="title">{tile.title}</div>
+                <div className="desc">{tile.desc}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Upload */}
+          <div className="uploader">
+            <p><strong>Prześlij zdjęcia (max 5 plików, do 5 MB każdy)</strong></p>
+            <small>Przeciągnij i upuść lub przeglądaj, aby przesłać. Obsługiwane formaty: HEIC, JPEG, PNG</small>
+            <div className="actions">
+              <input 
+                id="file" 
+                type="file" 
+                accept="image/jpeg,image/png,image/heic,.heic" 
+                style={{ display: "none" }} 
+                multiple 
+                onChange={handleFileChange} 
+              />
+              <button 
+                type="button" 
+                className="browse" 
+                onClick={() => document.getElementById('file')?.click()}
+                disabled={selectedFiles.length >= 5}
+              >
+                {selectedFiles.length >= 5 ? 'Limit osiągnięty' : 'Przeglądaj'}
+              </button>
+            </div>
+            <div className="files">
+              {selectedFiles.map((fileObj) => (
+                <div key={fileObj.id} className="file-row">
+                  <div className="file-top">
+                    <div className="file-name" title={fileObj.file.name}>
+                      {fileObj.file.name}
+                    </div>
+                    <button 
+                      type="button" 
+                      className="file-remove" 
+                      onClick={() => removeFile(fileObj.id)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Komentarz */}
+          <div style={{ marginTop: "12px" }}>
+            <label className="hint" htmlFor="comment">Komentarz</label>
+            <textarea 
+              id="comment" 
+              placeholder="Komentarz (opcjonalnie jednak dla nas pomocny) - jakiej wielkości planujesz ogród, jakie są istniejące warunki podłoża, czy jest taras, itd."
+              value={formData.comment}
+              onChange={(e) => handleInputChange('comment', e.target.value)}
+              rows={4}
+            />
+          </div>
+
+          {/* Zgody */}
+          <label className="consent">
+            <input 
+              id="consent" 
+              type="checkbox" 
+              checked={formData.consent}
+              onChange={(e) => handleInputChange('consent', e.target.checked)}
+              required 
+            />
+            <span>Wyrażam zgodę na kontakt telefoniczny w związku z obsługą niniejszego zgłoszenia. *</span>
+          </label>
+          {errors.consent && <span className="error-message">{errors.consent}</span>}
+
+          {/* Submit */}
+          <button 
+            className="btn" 
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Wysyłanie...' : 'Wyślij'}
+          </button>
+        </form>
+      </div>
+    </>
+  );
+}
