@@ -2,6 +2,20 @@
 
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
+import { Montserrat, Playfair_Display } from 'next/font/google';
+
+// Konfiguracja fontów
+const montserrat = Montserrat({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '700'],
+  display: 'swap',
+});
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -24,40 +38,39 @@ export default function Home() {
       value: "home-extension", 
       title: "Home Extension", 
       desc: "Najwyższy standard, płaski dach, różne kształty świetlików, pełna integracja z domem", 
-      src: "/next.svg", 
+      src: "/images/forms/home-extension-day.webp", 
       alt: "Home Extension" 
     },
     { 
       value: "cieply", 
       title: "Klasyczny ciepły", 
       desc: "Interesujące, różne kształty dachu, eleganckie, ciepłe wykonanie, komfort przez cały rok", 
-      src: "/next.svg", 
+      src: "/images/forms/ogrod-klasyczny-day.webp", 
       alt: "Klasyczny ciepły" 
     },
     { 
       value: "zimny", 
       title: "Sezonowy zimny", 
       desc: "Ekonomiczne rozwiązanie, więcej miejsca latem i cieplejsze dni jesienią", 
-      src: "/next.svg", 
+      src: "/images/forms/ogrod-sezonowy-day.webp", 
       alt: "Sezonowy zimny" 
     },
     { 
       value: "pergola", 
       title: "Pergola Bioclimatic", 
       desc: "Ruchome lamele, nowoczesna ochrona tarasu. Możliwe ruchome szklane ściany", 
-      src: "/next.svg", 
+      src: "/images/forms/pergola-bioclimatic-day.webp", 
       alt: "Pergola Bioclimatic" 
     },
     { 
       value: "doradzcie", 
       title: "Nie wiem, doradźcie mi", 
       desc: "Nie musisz znać wszystkich rozwiązań – przygotujemy najlepszą opcję dla Twojego domu", 
-      src: "/next.svg", 
+      src: "/images/forms/help-me.webp", 
       alt: "Doradztwo" 
     }
   ];
 
-  // Walidacja formularza
   const validateForm = useCallback(() => {
     const newErrors: {[key: string]: string} = {};
     
@@ -78,7 +91,6 @@ export default function Home() {
     return Object.keys(newErrors).length === 0;
   }, [formData]);
 
-  // Obsługa zmiany pól formularza
   const handleInputChange = useCallback((field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -86,11 +98,10 @@ export default function Home() {
     }
   }, [errors]);
 
-  // Obsługa plików z walidacją
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     const maxFiles = 5;
-    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    const maxFileSize = 5 * 1024 * 1024;
     const allowedTypes = ['image/jpeg', 'image/png', 'image/heic'];
 
     if (selectedFiles.length + files.length > maxFiles) {
@@ -148,7 +159,6 @@ export default function Home() {
         submitData.append('files', file);
       });
 
-      // Symulacja wysyłania - usuń to i dodaj prawdziwy endpoint
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       alert('Formularz został wysłany pomyślnie!');
@@ -172,58 +182,48 @@ export default function Home() {
   };
 
   return (
-    <>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
-        
-        body {
-          background-color: white !important;
-          color: black !important;
-          margin: 0;
-          padding: 0;
+    <div className={`${montserrat.className} shell`}>
+      <style jsx>{`
+        .shell {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: white;
+          min-height: 100vh;
+          font-size: 12px;
         }
         
-        * {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-        }
-        
-        h1 {
-          font-family: 'Playfair Display', serif !important;
-          font-size: 33px !important;
-          font-weight: 700 !important;
+        .main-title {
+          font-size: 33px;
+          font-weight: 700;
           line-height: 1.2;
           margin-bottom: 0.75rem;
-          color: black !important;
+          color: black;
         }
         
         .sub {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 400 !important;
+          font-size: 12px;
+          font-weight: 400;
           line-height: 1.6;
-          color: #6b7280 !important;
+          color: #6b7280;
           margin-bottom: 2rem;
         }
         
         .hint {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 500 !important;
-          color: #374151 !important;
+          font-size: 12px;
+          font-weight: 500;
+          color: #374151;
           margin-bottom: 0.5rem;
           display: block;
         }
         
         input, textarea, select {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 400 !important;
+          font-family: inherit;
+          font-size: 12px;
+          font-weight: 400;
           line-height: 1.5;
-          color: black !important;
-          background-color: white !important;
+          color: black;
+          background-color: white;
           padding: 8px 12px;
           border: 1px solid #d1d5db;
           border-radius: 4px;
@@ -232,16 +232,14 @@ export default function Home() {
         }
         
         input::placeholder, textarea::placeholder {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          color: #9ca3af !important;
-          font-weight: 400 !important;
+          color: #9ca3af;
+          font-weight: 400;
         }
         
         button {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 500 !important;
+          font-family: inherit;
+          font-size: 12px;
+          font-weight: 500;
           padding: 8px 16px;
           border: none;
           border-radius: 4px;
@@ -260,16 +258,15 @@ export default function Home() {
         }
         
         .section-title {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 600 !important;
+          font-size: 12px;
+          font-weight: 600;
           margin: 20px 0 10px 0;
-          color: black !important;
+          color: black;
         }
         
         .tiles {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
           gap: 16px;
           margin: 20px 0;
         }
@@ -279,9 +276,10 @@ export default function Home() {
           border-radius: 8px;
           padding: 16px;
           text-align: center;
-          background: white !important;
+          background: white;
           transition: all 0.2s;
-          color: black !important;
+          color: black;
+          cursor: pointer;
         }
         
         .tile:hover {
@@ -290,41 +288,30 @@ export default function Home() {
         
         .tile.selected {
           border-color: #3b82f6;
-          background-color: #eff6ff !important;
+          background-color: #eff6ff;
         }
         
         .tile .title {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 600 !important;
+          font-size: 12px;
+          font-weight: 600;
           margin: 8px 0 4px 0;
-          color: black !important;
+          color: black;
         }
         
         .tile .desc {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 400 !important;
-          color: #6b7280 !important;
+          font-size: 12px;
+          font-weight: 400;
+          color: #6b7280;
         }
         
         .img-wrap {
           width: 100%;
-          height: 100px;
+          height: 150px;
           position: relative;
           margin-bottom: 8px;
           background-color: #f3f4f6;
           border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .img-wrap img {
-          border-radius: 4px;
-          object-fit: contain !important;
-          max-width: 80px;
-          max-height: 80px;
+          overflow: hidden;
         }
         
         .grid.two {
@@ -340,22 +327,20 @@ export default function Home() {
           padding: 20px;
           text-align: center;
           margin: 20px 0;
-          background-color: white !important;
+          background-color: white;
         }
         
         .uploader p, .uploader small {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 400 !important;
+          font-size: 12px;
+          font-weight: 400;
           margin: 4px 0;
-          color: black !important;
+          color: black;
         }
         
         .uploader strong {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 600 !important;
-          color: black !important;
+          font-size: 12px;
+          font-weight: 600;
+          color: black;
         }
         
         .file-row {
@@ -366,7 +351,7 @@ export default function Home() {
           border: 1px solid #e5e7eb;
           border-radius: 4px;
           margin: 4px 0;
-          background-color: white !important;
+          background-color: white;
         }
         
         .file-top {
@@ -377,23 +362,22 @@ export default function Home() {
         }
         
         .file-name {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 400 !important;
-          color: black !important;
+          font-size: 12px;
+          font-weight: 400;
+          color: black;
         }
         
         .file-remove {
-          background: #ef4444 !important;
-          color: white !important;
+          background: #ef4444;
+          color: white;
           border: none;
           border-radius: 50%;
-          width: 20px !important;
-          height: 20px !important;
+          width: 20px;
+          height: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px !important;
+          font-size: 14px;
           cursor: pointer;
         }
         
@@ -405,45 +389,30 @@ export default function Home() {
         }
         
         .consent input {
-          width: auto !important;
+          width: auto;
           margin: 0;
         }
         
         .consent span {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 400 !important;
-          color: black !important;
+          font-size: 12px;
+          font-weight: 400;
+          color: black;
         }
         
         .error-message {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 400 !important;
-          color: #ef4444 !important;
+          font-size: 12px;
+          font-weight: 400;
+          color: #ef4444;
           display: block;
           margin-top: 4px;
         }
         
-        .shell {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 20px;
-          background-color: white !important;
-          min-height: 100vh;
-        }
-        
-        form {
-          background-color: white !important;
-        }
-        
         .btn {
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 10px !important;
-          font-weight: 500 !important;
-          padding: 12px 24px !important;
-          background-color: #3b82f6 !important;
-          color: white !important;
+          font-size: 12px;
+          font-weight: 500;
+          padding: 12px 24px;
+          background-color: #3b82f6;
+          color: white;
           border: none;
           border-radius: 4px;
           cursor: pointer;
@@ -451,192 +420,185 @@ export default function Home() {
         }
         
         .btn:hover {
-          background-color: #2563eb !important;
+          background-color: #2563eb;
         }
         
         .btn:disabled {
-          background-color: #9ca3af !important;
+          background-color: #9ca3af;
           cursor: not-allowed;
         }
       `}</style>
 
-      <div className="shell">
-        <h1>Otrzymaj darmową wycenę</h1>
-        <p className="sub">
-          PODAJ KILKA PODSTAWOWYCH INFORMACJI – PRZYGOTUJEMY KALKULACJĘ I SKONTAKTUJEMY SIĘ W CIĄGU 24H
-        </p>
+      <h1 className={`${playfairDisplay.className} main-title`}>
+        Otrzymaj darmową wycenę
+      </h1>
+      <p className="sub">
+        PODAJ KILKA PODSTAWOWYCH INFORMACJI – PRZYGOTUJEMY KALKULACJĘ I SKONTAKTUJEMY SIĘ W CIĄGU 24H
+      </p>
 
-        <form id="verandana-form" onSubmit={handleSubmit}>
-          {/* Dane kontaktowe */}
-          <div className="grid two">
-            <div>
-              <label className="hint" htmlFor="name">Imię *</label>
-              <input 
-                id="name" 
-                type="text" 
-                placeholder="Wpisz swoje imię" 
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                required 
-              />
-              {errors.name && <span className="error-message">{errors.name}</span>}
-            </div>
-            
-            <div>
-              <label className="hint" htmlFor="email">E-mail *</label>
-              <input 
-                id="email" 
-                type="email" 
-                placeholder="Wpisz swój e-mail" 
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                required 
-              />
-              {errors.email && <span className="error-message">{errors.email}</span>}
-            </div>
-            
-            <div>
-              <label className="hint" htmlFor="phone">Telefon *</label>
-              <input 
-                id="phone" 
-                type="tel" 
-                placeholder="Wpisz swój numer telefonu" 
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                required 
-              />
-              {errors.phone && <span className="error-message">{errors.phone}</span>}
-            </div>
-            
-            <div>
-              <label className="hint" htmlFor="postal">Kod pocztowy *</label>
-              <input 
-                id="postal" 
-                type="text" 
-                placeholder="12-345" 
-                value={formData.postal}
-                onChange={(e) => handleInputChange('postal', e.target.value)}
-                required 
-              />
-              {errors.postal && <span className="error-message">{errors.postal}</span>}
-            </div>
-          </div>
-
-          {/* Termin */}
-          <div style={{ marginTop: "12px" }}>
-            <label className="hint" htmlFor="date">Preferowany termin rozpoczęcia montażu</label>
+      <form id="verandana-form" onSubmit={handleSubmit}>
+        <div className="grid two">
+          <div>
+            <label className="hint" htmlFor="name">Imię *</label>
             <input 
-              id="date" 
-              type="date" 
-              value={formData.date}
-              onChange={(e) => handleInputChange('date', e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
-            />
-          </div>
-
-          {/* Kafelki */}
-          <div className="section-title">Wybierz typ konstrukcji, który Cię interesuje *</div>
-          {errors.selectedType && <span className="error-message">{errors.selectedType}</span>}
-          <div className="tiles">
-            {tilesData.map(tile => (
-              <button
-                key={tile.value}
-                type="button"
-                className={`tile ${formData.selectedType === tile.value ? "selected" : ""}`}
-                onClick={() => handleTileSelect(tile.value)}
-              >
-                <div className="img-wrap">
-                  <Image 
-                    src={tile.src} 
-                    alt={tile.alt} 
-                    width={80}
-                    height={80}
-                    style={{ objectFit: 'contain' }}
-                  />
-                </div>
-                <div className="title">{tile.title}</div>
-                <div className="desc">{tile.desc}</div>
-              </button>
-            ))}
-          </div>
-
-          {/* Upload */}
-          <div className="uploader">
-            <p><strong>Prześlij zdjęcia (max 5 plików, do 5 MB każdy)</strong></p>
-            <small>Przeciągnij i upuść lub przeglądaj, aby przesłać. Obsługiwane formaty: HEIC, JPEG, PNG</small>
-            <div className="actions">
-              <input 
-                id="file" 
-                type="file" 
-                accept="image/jpeg,image/png,image/heic,.heic" 
-                style={{ display: "none" }} 
-                multiple 
-                onChange={handleFileChange} 
-              />
-              <button 
-                type="button" 
-                className="browse" 
-                onClick={() => document.getElementById('file')?.click()}
-                disabled={selectedFiles.length >= 5}
-              >
-                {selectedFiles.length >= 5 ? 'Limit osiągnięty' : 'Przeglądaj'}
-              </button>
-            </div>
-            <div className="files">
-              {selectedFiles.map((fileObj) => (
-                <div key={fileObj.id} className="file-row">
-                  <div className="file-top">
-                    <div className="file-name" title={fileObj.file.name}>
-                      {fileObj.file.name}
-                    </div>
-                    <button 
-                      type="button" 
-                      className="file-remove" 
-                      onClick={() => removeFile(fileObj.id)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Komentarz */}
-          <div style={{ marginTop: "12px" }}>
-            <label className="hint" htmlFor="comment">Komentarz</label>
-            <textarea 
-              id="comment" 
-              placeholder="Komentarz (opcjonalnie jednak dla nas pomocny) - jakiej wielkości planujesz ogród, jakie są istniejące warunki podłoża, czy jest taras, itd."
-              value={formData.comment}
-              onChange={(e) => handleInputChange('comment', e.target.value)}
-              rows={4}
-            />
-          </div>
-
-          {/* Zgody */}
-          <label className="consent">
-            <input 
-              id="consent" 
-              type="checkbox" 
-              checked={formData.consent}
-              onChange={(e) => handleInputChange('consent', e.target.checked)}
+              id="name" 
+              type="text" 
+              placeholder="Wpisz swoje imię" 
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
               required 
             />
-            <span>Wyrażam zgodę na kontakt telefoniczny w związku z obsługą niniejszego zgłoszenia. *</span>
-          </label>
-          {errors.consent && <span className="error-message">{errors.consent}</span>}
+            {errors.name && <span className="error-message">{errors.name}</span>}
+          </div>
+          
+          <div>
+            <label className="hint" htmlFor="email">E-mail *</label>
+            <input 
+              id="email" 
+              type="email" 
+              placeholder="Wpisz swój e-mail" 
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              required 
+            />
+            {errors.email && <span className="error-message">{errors.email}</span>}
+          </div>
+          
+          <div>
+            <label className="hint" htmlFor="phone">Telefon *</label>
+            <input 
+              id="phone" 
+              type="tel" 
+              placeholder="Wpisz swój numer telefonu" 
+              value={formData.phone}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
+              required 
+            />
+            {errors.phone && <span className="error-message">{errors.phone}</span>}
+          </div>
+          
+          <div>
+            <label className="hint" htmlFor="postal">Kod pocztowy *</label>
+            <input 
+              id="postal" 
+              type="text" 
+              placeholder="12-345" 
+              value={formData.postal}
+              onChange={(e) => handleInputChange('postal', e.target.value)}
+              required 
+            />
+            {errors.postal && <span className="error-message">{errors.postal}</span>}
+          </div>
+        </div>
 
-          {/* Submit */}
-          <button 
-            className="btn" 
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Wysyłanie...' : 'Wyślij'}
-          </button>
-        </form>
-      </div>
-    </>
+        <div style={{ marginTop: "12px" }}>
+          <label className="hint" htmlFor="date">Preferowany termin rozpoczęcia montażu</label>
+          <input 
+            id="date" 
+            type="date" 
+            value={formData.date}
+            onChange={(e) => handleInputChange('date', e.target.value)}
+            min={new Date().toISOString().split('T')[0]}
+          />
+        </div>
+
+        <div className="section-title">Wybierz typ konstrukcji, który Cię interesuje *</div>
+        {errors.selectedType && <span className="error-message">{errors.selectedType}</span>}
+        <div className="tiles">
+          {tilesData.map(tile => (
+            <button
+              key={tile.value}
+              type="button"
+              className={`tile ${formData.selectedType === tile.value ? "selected" : ""}`}
+              onClick={() => handleTileSelect(tile.value)}
+            >
+              <div className="img-wrap">
+                <Image 
+                  src={tile.src} 
+                  alt={tile.alt} 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="250px"
+                />
+              </div>
+              <div className="title">{tile.title}</div>
+              <div className="desc">{tile.desc}</div>
+            </button>
+          ))}
+        </div>
+
+        <div className="uploader">
+          <p><strong>Prześlij zdjęcia (max 5 plików, do 5 MB każdy)</strong></p>
+          <small>Przeciągnij i upuść lub przeglądaj, aby przesłać. Obsługiwane formaty: HEIC, JPEG, PNG</small>
+          <div className="actions">
+            <input 
+              id="file" 
+              type="file" 
+              accept="image/jpeg,image/png,image/heic,.heic" 
+              style={{ display: "none" }} 
+              multiple 
+              onChange={handleFileChange} 
+            />
+            <button 
+              type="button" 
+              className="browse" 
+              onClick={() => document.getElementById('file')?.click()}
+              disabled={selectedFiles.length >= 5}
+            >
+              {selectedFiles.length >= 5 ? 'Limit osiągnięty' : 'Przeglądaj'}
+            </button>
+          </div>
+          <div className="files">
+            {selectedFiles.map((fileObj) => (
+              <div key={fileObj.id} className="file-row">
+                <div className="file-top">
+                  <div className="file-name" title={fileObj.file.name}>
+                    {fileObj.file.name}
+                  </div>
+                  <button 
+                    type="button" 
+                    className="file-remove" 
+                    onClick={() => removeFile(fileObj.id)}
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: "12px" }}>
+          <label className="hint" htmlFor="comment">Komentarz</label>
+          <textarea 
+            id="comment" 
+            placeholder="Komentarz (opcjonalnie jednak dla nas pomocny) - jakiej wielkości planujesz ogród, jakie są istniejące warunki podłoża, czy jest taras, itd."
+            value={formData.comment}
+            onChange={(e) => handleInputChange('comment', e.target.value)}
+            rows={4}
+          />
+        </div>
+
+        <label className="consent">
+          <input 
+            id="consent" 
+            type="checkbox" 
+            checked={formData.consent}
+            onChange={(e) => handleInputChange('consent', e.target.checked)}
+            required 
+          />
+          <span>Wyrażam zgodę na kontakt telefoniczny w związku z obsługą niniejszego zgłoszenia. *</span>
+        </label>
+        {errors.consent && <span className="error-message">{errors.consent}</span>}
+
+        <button 
+          className="btn" 
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Wysyłanie...' : 'Wyślij'}
+        </button>
+      </form>
+    </div>
   );
 }
