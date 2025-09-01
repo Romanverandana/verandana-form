@@ -79,7 +79,6 @@ const Form = () => {
   // Obsługa zmiany pól formularza
   const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Usuwanie błędu po zmianie pola
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -92,7 +91,6 @@ const Form = () => {
     const maxFileSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/png', 'image/heic'];
 
-    // Sprawdzenie limitu plików
     if (selectedFiles.length + files.length > maxFiles) {
       alert(`Możesz przesłać maksymalnie ${maxFiles} plików`);
       return;
@@ -117,20 +115,17 @@ const Form = () => {
     }));
     
     setSelectedFiles(prev => [...prev, ...newFiles]);
-    event.target.value = ''; // Reset input
+    event.target.value = '';
   }, [selectedFiles]);
 
-  // Usuwanie pliku
   const removeFile = useCallback((fileId) => {
     setSelectedFiles(prev => prev.filter(f => f.id !== fileId));
   }, []);
 
-  // Wybór typu konstrukcji
   const handleTileSelect = useCallback((value) => {
     handleInputChange('selectedType', value);
   }, [handleInputChange]);
 
-  // Obsługa submitu
   const handleSubmit = async (event) => {
     event.preventDefault();
     
@@ -143,17 +138,14 @@ const Form = () => {
     try {
       const submitData = new FormData();
       
-      // Dodanie danych formularza
       Object.entries(formData).forEach(([key, value]) => {
         submitData.append(key, value);
       });
       
-      // Dodanie plików
       selectedFiles.forEach(({ file }) => {
         submitData.append('files', file);
       });
 
-      // Tu dodaj logikę wysyłania formularza
       const response = await fetch('/api/submit-form', {
         method: 'POST',
         body: submitData,
@@ -161,7 +153,6 @@ const Form = () => {
 
       if (response.ok) {
         alert('Formularz został wysłany pomyślnie!');
-        // Reset formularza
         setFormData({
           name: '',
           email: '',
@@ -185,194 +176,51 @@ const Form = () => {
   };
 
   return (
-    <div className="shell">
-      <h1>Otrzymaj darmową wycenę</h1>
-      <p className="sub">
-        PODAJ KILKA PODSTAWOWYCH INFORMACJI – PRZYGOTUJEMY KALKULACJĘ I SKONTAKTUJEMY SIĘ W CIĄGU 24H
-      </p>
-
-      <form id="verandana-form" onSubmit={handleSubmit} noValidate>
-        {/* Dane kontaktowe */}
-        <div className="grid two">
-          <div>
-            <label className="hint" htmlFor="name">Imię *</label>
-            <input 
-              id="name" 
-              type="text" 
-              placeholder="Wpisz swoje imię" 
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              className={errors.name ? 'error' : ''}
-              required 
-            />
-            {errors.name && <span className="error-message">{errors.name}</span>}
-          </div>
-          
-          <div>
-            <label className="hint" htmlFor="email">E-mail *</label>
-            <input 
-              id="email" 
-              type="email" 
-              placeholder="Wpisz swój e-mail" 
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              className={errors.email ? 'error' : ''}
-              required 
-            />
-            {errors.email && <span className="error-message">{errors.email}</span>}
-          </div>
-          
-          <div>
-            <label className="hint" htmlFor="phone">Telefon *</label>
-            <input 
-              id="phone" 
-              type="tel" 
-              placeholder="Wpisz swój numer telefonu" 
-              value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-              className={errors.phone ? 'error' : ''}
-              required 
-            />
-            {errors.phone && <span className="error-message">{errors.phone}</span>}
-          </div>
-          
-          <div>
-            <label className="hint" htmlFor="postal">Kod pocztowy *</label>
-            <input 
-              id="postal" 
-              type="text" 
-              placeholder="12-345" 
-              value={formData.postal}
-              onChange={(e) => handleInputChange('postal', e.target.value)}
-              className={errors.postal ? 'error' : ''}
-              pattern="\d{2}-\d{3}"
-              required 
-            />
-            {errors.postal && <span className="error-message">{errors.postal}</span>}
-          </div>
-        </div>
-
-        {/* Termin */}
-        <div style={{ marginTop: "12px" }}>
-          <label className="hint" htmlFor="date">Preferowany termin rozpoczęcia montażu</label>
-          <input 
-            id="date" 
-            type="date" 
-            value={formData.date}
-            onChange={(e) => handleInputChange('date', e.target.value)}
-            min={new Date().toISOString().split('T')[0]} // Nie można wybrać daty z przeszłości
-          />
-        </div>
-
-        {/* Kafelki */}
-        <div className="section-title">Wybierz typ konstrukcji, który Cię interesuje *</div>
-        {errors.selectedType && <span className="error-message">{errors.selectedType}</span>}
-        <div className="tiles" role="radiogroup" aria-label="Typ zabudowy">
-          {tilesData.map(tile => (
-            <button
-              key={tile.value}
-              type="button"
-              className={`tile ${formData.selectedType === tile.value ? "selected" : ""}`}
-              onClick={() => handleTileSelect(tile.value)}
-              role="radio"
-              aria-checked={formData.selectedType === tile.value ? "true" : "false"}
-              aria-label={tile.title}
-            >
-              <div className="img-wrap">
-                <Image 
-                  src={tile.src} 
-                  alt={tile.alt} 
-                  width={300} 
-                  height={300}
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, 300px"
-                />
-              </div>
-              <div className="title">{tile.title}</div>
-              <div className="desc">{tile.desc}</div>
-            </button>
-          ))}
-        </div>
-
-        {/* Upload */}
-        <div className="uploader" aria-label="Prześlij zdjęcia (max 5 plików, do 5 MB każdy)">
-          <p><strong>Prześlij zdjęcia (max 5 plików, do 5 MB każdy)</strong></p>
-          <small>Przeciągnij i upuść lub przeglądaj, aby przesłać. Obsługiwane formaty: HEIC, JPEG, PNG</small>
-          <div className="actions">
-            <input 
-              id="file" 
-              type="file" 
-              accept="image/jpeg,image/png,image/heic,.heic" 
-              style={{ display: "none" }} 
-              multiple 
-              onChange={handleFileChange} 
-            />
-            <button 
-              type="button" 
-              className="browse" 
-              onClick={() => document.getElementById('file').click()}
-              disabled={selectedFiles.length >= 5}
-            >
-              {selectedFiles.length >= 5 ? 'Limit osiągnięty' : 'Przeglądaj'}
-            </button>
-          </div>
-          <div className="files">
-            {selectedFiles.map((fileObj) => (
-              <div key={fileObj.id} className="file-row">
-                <div className="file-top">
-                  <div className="file-name" title={fileObj.file.name}>
-                    {fileObj.file.name}
-                  </div>
-                  <button 
-                    type="button" 
-                    className="file-remove" 
-                    onClick={() => removeFile(fileObj.id)}
-                    aria-label={`Usuń plik ${fileObj.file.name}`}
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Komentarz */}
-        <div style={{ marginTop: "12px" }}>
-          <label className="hint" htmlFor="comment">Komentarz</label>
-          <textarea 
-            id="comment" 
-            placeholder="Komentarz (opcjonalnie jednak dla nas pomocny) - jakiej wielkości planujesz ogród, jakie są istniejące warunki podłoża, czy jest taras, itd."
-            value={formData.comment}
-            onChange={(e) => handleInputChange('comment', e.target.value)}
-            rows="4"
-          />
-        </div>
-
-        {/* Zgody */}
-        <label className="consent">
-          <input 
-            id="consent" 
-            type="checkbox" 
-            checked={formData.consent}
-            onChange={(e) => handleInputChange('consent', e.target.checked)}
-            required 
-          />
-          <span>Wyrażam zgodę na kontakt telefoniczny w związku z obsługą niniejszego zgłoszenia. *</span>
-        </label>
-        {errors.consent && <span className="error-message">{errors.consent}</span>}
-
-        {/* Submit */}
-        <button 
-          className="btn" 
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Wysyłanie...' : 'Wyślij'}
-        </button>
-      </form>
-    </div>
-  );
-};
-
-export default Form;
+    <div className="shell font-body">
+      <style jsx>{`
+        .shell {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        
+        h1 {
+          font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-size: 2.5rem;
+          font-weight: 700;
+          line-height: 1.2;
+          letter-spacing: -0.025em;
+          margin-bottom: 0.75rem;
+          color: #1f2937;
+        }
+        
+        .sub {
+          font-size: 1rem;
+          font-weight: 400;
+          line-height: 1.6;
+          color: #6b7280;
+          margin-bottom: 2rem;
+          letter-spacing: 0.01em;
+        }
+        
+        .hint {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.5rem;
+          display: block;
+          letter-spacing: 0.025em;
+        }
+        
+        input, textarea, select {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-size: 0.875rem;
+          font-weight: 400;
+          line-height: 1.5;
+          letter-spacing: 0.01em;
+          color: #1f2937;
+        }
+        
+        input::placeholder, textarea::placeholder {
+          color: #9ca3af;
+          font-weight: 400;
