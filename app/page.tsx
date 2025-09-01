@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Montserrat, Playfair_Display } from 'next/font/google';
 
@@ -180,6 +180,25 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const elements = document.querySelectorAll('.animate-up');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    elements.forEach(element => {
+      observer.observe(element);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <div className={`${montserrat.className} shell`}>
       <style jsx>{`
@@ -192,7 +211,18 @@ export default function Home() {
           font-size: 11px;
           overflow-x: hidden;
         }
-        
+
+        .animate-up {
+          opacity: 0;
+          transform: translateY(50px);
+          transition: all 0.5s ease;
+        }
+
+        .in-view {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
         .main-title {
           font-size: 33px;
           font-weight: 700;
@@ -453,7 +483,7 @@ export default function Home() {
 
       <form id="verandana-form" onSubmit={handleSubmit}>
         <div className="grid two">
-          <div>
+          <div className="animate-up">
             <label className="hint" htmlFor="name">Imię *</label>
             <input 
               id="name" 
@@ -466,7 +496,7 @@ export default function Home() {
             {errors.name && <span className="error-message">{errors.name}</span>}
           </div>
           
-          <div>
+          <div className="animate-up">
             <label className="hint" htmlFor="email">E-mail *</label>
             <input 
               id="email" 
@@ -479,7 +509,7 @@ export default function Home() {
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
           
-          <div>
+          <div className="animate-up">
             <label className="hint" htmlFor="phone">Telefon *</label>
             <input 
               id="phone" 
@@ -492,7 +522,7 @@ export default function Home() {
             {errors.phone && <span className="error-message">{errors.phone}</span>}
           </div>
           
-          <div>
+          <div className="animate-up">
             <label className="hint" htmlFor="postal">Kod pocztowy *</label>
             <input 
               id="postal" 
@@ -506,7 +536,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div style={{ marginTop: "20px" }}>
+        <div className="animate-up" style={{ marginTop: "20px" }}>
           <label className="hint" htmlFor="date">Preferowany termin rozpoczęcia montażu</label>
           <input 
             id="date" 
@@ -517,7 +547,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="section-title">Wybierz typ konstrukcji, który Cię interesuje *</div>
+        <div className="animate-up section-title">Wybierz typ konstrukcji, który Cię interesuje *</div>
         {errors.selectedType && <span className="error-message">{errors.selectedType}</span>}
         <div className="tiles">
           {tilesData.map(tile => (
