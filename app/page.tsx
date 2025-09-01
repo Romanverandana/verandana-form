@@ -190,6 +190,7 @@ export default function Home() {
           background-color: white;
           min-height: 100vh;
           font-size: 11px;
+          overflow-x: hidden;
         }
         
         .main-title {
@@ -209,7 +210,7 @@ export default function Home() {
           margin-bottom: 40px;
           text-align: center;
         }
-        
+
         .hint {
           font-size: 11px;
           font-weight: 500;
@@ -217,7 +218,7 @@ export default function Home() {
           margin-bottom: 8px;
           display: block;
         }
-        
+
         input, textarea, select {
           font-family: inherit;
           font-size: 11px;
@@ -232,17 +233,17 @@ export default function Home() {
           box-sizing: border-box;
           transition: border-color 0.2s ease;
         }
-        
+
         input:focus, textarea:focus {
           outline: none;
           border-color: #9ca3af;
         }
-        
+
         input::placeholder, textarea::placeholder {
           color: #9ca3af;
           font-weight: 400;
         }
-        
+
         .section-title {
           font-size: 14px;
           font-weight: 600;
@@ -250,7 +251,7 @@ export default function Home() {
           color: black;
           text-align: center;
         }
-        
+
         .tiles {
           display: flex;
           gap: 16px;
@@ -258,7 +259,7 @@ export default function Home() {
           overflow-x: auto;
           padding-bottom: 10px;
         }
-        
+
         .tile {
           background: white;
           border: 1px solid #e5e7eb;
@@ -269,31 +270,31 @@ export default function Home() {
           transition: all 0.2s ease;
           flex: 0 0 180px;
         }
-        
+
         .tile:hover {
           border-color: #9ca3af;
           transform: translateY(-2px);
         }
-        
+
         .tile.selected {
           border-color: black;
           background-color: #f9fafb;
         }
-        
+
         .tile .title {
           font-size: 11px;
           font-weight: 600;
           margin: 8px 0 4px 0;
           color: black;
         }
-        
+
         .tile .desc {
           font-size: 10px;
           font-weight: 400;
           color: #6b7280;
           line-height: 1.3;
         }
-        
+
         .img-wrap {
           width: 100%;
           height: 120px;
@@ -302,14 +303,7 @@ export default function Home() {
           border-radius: 6px;
           overflow: hidden;
         }
-        
-        .grid.two {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 20px;
-          margin: 20px 0;
-        }
-        
+
         .uploader {
           background: #f9fafb;
           border-radius: 8px;
@@ -317,20 +311,20 @@ export default function Home() {
           text-align: center;
           margin: 20px 0;
         }
-        
+
         .uploader p, .uploader small {
           font-size: 11px;
           font-weight: 400;
           margin: 4px 0;
           color: black;
         }
-        
+
         .uploader strong {
           font-size: 11px;
           font-weight: 600;
           color: black;
         }
-        
+
         .browse {
           background: #e5e7eb;
           color: black;
@@ -343,16 +337,16 @@ export default function Home() {
           margin-top: 12px;
           transition: background-color 0.2s ease;
         }
-        
+
         .browse:hover {
           background: #d1d5db;
         }
-        
+
         .browse:disabled {
           background: #9ca3af;
           color: #6b7280;
         }
-        
+
         .file-row {
           display: flex;
           justify-content: space-between;
@@ -363,22 +357,22 @@ export default function Home() {
           margin: 8px 0;
           background: white;
         }
-        
+
         .file-top {
           display: flex;
           justify-content: space-between;
           align-items: center;
           width: 100%;
         }
-        
+
         .file-name {
           font-size: 11px;
           font-weight: 400;
           color: #374151;
         }
-        
+
         .file-remove {
-          background: #ef4444;
+          background: #9ca3af;
           color: white;
           border: none;
           border-radius: 4px;
@@ -390,11 +384,11 @@ export default function Home() {
           font-size: 12px;
           cursor: pointer;
         }
-        
+
         .file-remove:hover {
-          background: #dc2626;
+          background: #6b7280;
         }
-        
+
         .consent {
           display: flex;
           align-items: flex-start;
@@ -404,28 +398,28 @@ export default function Home() {
           background: #f9fafb;
           border-radius: 8px;
         }
-        
+
         .consent input {
           width: 16px !important;
           height: 16px !important;
           margin: 2px 0 0 0 !important;
         }
-        
+
         .consent span {
           font-size: 11px;
           font-weight: 400;
           color: #4b5563;
           line-height: 1.4;
         }
-        
+
         .error-message {
           font-size: 10px;
           font-weight: 400;
-          color: #ef4444;
+          color: #6b7280;
           display: block;
           margin-top: 4px;
         }
-        
+
         .btn {
           font-size: 14px;
           font-weight: 600;
@@ -439,11 +433,11 @@ export default function Home() {
           width: 100%;
           transition: background-color 0.2s ease;
         }
-        
+
         .btn:hover {
           background-color: #1a0f3a;
         }
-        
+
         .btn:disabled {
           background-color: #9ca3af;
           cursor: not-allowed;
@@ -538,7 +532,7 @@ export default function Home() {
                   src={tile.src} 
                   alt={tile.alt} 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="180px"
                 />
               </div>
