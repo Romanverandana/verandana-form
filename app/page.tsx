@@ -24,7 +24,7 @@ export default function Page() {
     () => [
       { value: "home-extension-day", title: "Home Extension", desc: "Najwyższy standard, płaski dach,\nrÓżne kształty świetlików, pełna\nintegracja z domem", src: "/images/forms/home-extension-day.webp", alt: "Home Extension" },
       { value: "ogrod-klasyczny-day", title: "Klasyczny ciepły", desc: "Interesujące, różne kształty dachu,\neleganckie, ciepłe wykonanie,\nkomfort przez cały rok", src: "/images/forms/cieply-klasyczny-day.webp", alt: "Klasyczny ciepły" },
-      { value: "ogrod-sezonowy-day", title: "Sezonowy zimny", desc: "Ekonomiczne rozwiązanie, więcej\nmiejsca latem i cieplejsze dni\njesienią", src: "/images/forms/sezonowy-zimny-day.webp", alt: "Sezonowy zimny" },
+      { value: "sezonowy-zimny-day", title: "Sezonowy zimny", desc: "Ekonomiczne rozwiązanie, więcej\nmiejsca latem i cieplejsze dni\njesienią", src: "/images/forms/sezonowy-zimny-day.webp", alt: "Sezonowy zimny" },
       { value: "pergola-bioclimatic-day", title: "Pergola Bioclimatic", desc: "Ruchome lamele, nowoczesna\nochrona tarasu. Możliwe ruchome\nszklane ściany", src: "/images/forms/pergola-bioclimatic-day.webp", alt: "Pergola Bioclimatic" },
       { value: "help-me", title: "Nie wiem", desc: "Nie musisz znać wszystkich\nrozwiązań – przygotujemy\nnajlepszą opcję dla Twojego domu", src: "/images/forms/pomozcie-w-wyborze-ogrodu.webp", alt: "Doradztwo" }
     ],
