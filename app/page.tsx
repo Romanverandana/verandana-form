@@ -24,35 +24,35 @@ export default function Home() {
       value: "home-extension", 
       title: "Home Extension", 
       desc: "Najwyższy standard, płaski dach, różne kształty świetlików, pełna integracja z domem", 
-      src: "/images/forms/home-extension-day.webp", 
+      src: "/next.svg", 
       alt: "Home Extension" 
     },
     { 
       value: "cieply", 
       title: "Klasyczny ciepły", 
       desc: "Interesujące, różne kształty dachu, eleganckie, ciepłe wykonanie, komfort przez cały rok", 
-      src: "/images/forms/ogrod-klasyczny-day.webp", 
+      src: "/next.svg", 
       alt: "Klasyczny ciepły" 
     },
     { 
       value: "zimny", 
       title: "Sezonowy zimny", 
       desc: "Ekonomiczne rozwiązanie, więcej miejsca latem i cieplejsze dni jesienią", 
-      src: "/images/forms/ogrod-sezonowy-day.webp", 
+      src: "/next.svg", 
       alt: "Sezonowy zimny" 
     },
     { 
       value: "pergola", 
       title: "Pergola Bioclimatic", 
       desc: "Ruchome lamele, nowoczesna ochrona tarasu. Możliwe ruchome szklane ściany", 
-      src: "/images/forms/pergola-bioclimatic-day.webp", 
+      src: "/next.svg", 
       alt: "Pergola Bioclimatic" 
     },
     { 
       value: "doradzcie", 
       title: "Nie wiem, doradźcie mi", 
       desc: "Nie musisz znać wszystkich rozwiązań – przygotujemy najlepszą opcję dla Twojego domu", 
-      src: "/images/forms/help-me.webp", 
+      src: "/next.svg", 
       alt: "Doradztwo" 
     }
   ];
@@ -176,9 +176,16 @@ export default function Home() {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
         
+        body {
+          background-color: white !important;
+          color: black !important;
+          margin: 0;
+          padding: 0;
+        }
+        
         * {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 10px;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
         }
@@ -186,26 +193,26 @@ export default function Home() {
         h1 {
           font-family: 'Playfair Display', serif !important;
           font-size: 33px !important;
-          font-weight: 700;
+          font-weight: 700 !important;
           line-height: 1.2;
           margin-bottom: 0.75rem;
-          color: #1f2937;
+          color: black !important;
         }
         
         .sub {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 400;
+          font-weight: 400 !important;
           line-height: 1.6;
-          color: #6b7280;
+          color: #6b7280 !important;
           margin-bottom: 2rem;
         }
         
         .hint {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 500;
-          color: #374151;
+          font-weight: 500 !important;
+          color: #374151 !important;
           margin-bottom: 0.5rem;
           display: block;
         }
@@ -213,9 +220,10 @@ export default function Home() {
         input, textarea, select {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 400;
+          font-weight: 400 !important;
           line-height: 1.5;
-          color: #1f2937;
+          color: black !important;
+          background-color: white !important;
           padding: 8px 12px;
           border: 1px solid #d1d5db;
           border-radius: 4px;
@@ -226,14 +234,14 @@ export default function Home() {
         input::placeholder, textarea::placeholder {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          color: #9ca3af;
-          font-weight: 400;
+          color: #9ca3af !important;
+          font-weight: 400 !important;
         }
         
         button {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 500;
+          font-weight: 500 !important;
           padding: 8px 16px;
           border: none;
           border-radius: 4px;
@@ -254,8 +262,9 @@ export default function Home() {
         .section-title {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 600;
+          font-weight: 600 !important;
           margin: 20px 0 10px 0;
+          color: black !important;
         }
         
         .tiles {
@@ -270,8 +279,9 @@ export default function Home() {
           border-radius: 8px;
           padding: 16px;
           text-align: center;
-          background: white;
+          background: white !important;
           transition: all 0.2s;
+          color: black !important;
         }
         
         .tile:hover {
@@ -280,28 +290,41 @@ export default function Home() {
         
         .tile.selected {
           border-color: #3b82f6;
-          background-color: #eff6ff;
+          background-color: #eff6ff !important;
         }
         
         .tile .title {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 600;
+          font-weight: 600 !important;
           margin: 8px 0 4px 0;
+          color: black !important;
         }
         
         .tile .desc {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 400;
-          color: #6b7280;
+          font-weight: 400 !important;
+          color: #6b7280 !important;
         }
         
         .img-wrap {
           width: 100%;
-          height: 120px;
+          height: 100px;
           position: relative;
           margin-bottom: 8px;
+          background-color: #f3f4f6;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .img-wrap img {
+          border-radius: 4px;
+          object-fit: contain !important;
+          max-width: 80px;
+          max-height: 80px;
         }
         
         .grid.two {
@@ -317,19 +340,22 @@ export default function Home() {
           padding: 20px;
           text-align: center;
           margin: 20px 0;
+          background-color: white !important;
         }
         
         .uploader p, .uploader small {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 400;
+          font-weight: 400 !important;
           margin: 4px 0;
+          color: black !important;
         }
         
         .uploader strong {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 600;
+          font-weight: 600 !important;
+          color: black !important;
         }
         
         .file-row {
@@ -340,24 +366,35 @@ export default function Home() {
           border: 1px solid #e5e7eb;
           border-radius: 4px;
           margin: 4px 0;
+          background-color: white !important;
+        }
+        
+        .file-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
         }
         
         .file-name {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 400;
+          font-weight: 400 !important;
+          color: black !important;
         }
         
         .file-remove {
-          background: #ef4444;
-          color: white;
+          background: #ef4444 !important;
+          color: white !important;
           border: none;
           border-radius: 50%;
-          width: 20px;
-          height: 20px;
+          width: 20px !important;
+          height: 20px !important;
           display: flex;
           align-items: center;
           justify-content: center;
+          font-size: 12px !important;
+          cursor: pointer;
         }
         
         .consent {
@@ -368,21 +405,22 @@ export default function Home() {
         }
         
         .consent input {
-          width: auto;
+          width: auto !important;
           margin: 0;
         }
         
         .consent span {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 400;
+          font-weight: 400 !important;
+          color: black !important;
         }
         
         .error-message {
           font-family: 'Montserrat', sans-serif !important;
           font-size: 10px !important;
-          font-weight: 400;
-          color: #ef4444;
+          font-weight: 400 !important;
+          color: #ef4444 !important;
           display: block;
           margin-top: 4px;
         }
@@ -391,6 +429,34 @@ export default function Home() {
           max-width: 800px;
           margin: 0 auto;
           padding: 20px;
+          background-color: white !important;
+          min-height: 100vh;
+        }
+        
+        form {
+          background-color: white !important;
+        }
+        
+        .btn {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 10px !important;
+          font-weight: 500 !important;
+          padding: 12px 24px !important;
+          background-color: #3b82f6 !important;
+          color: white !important;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 20px;
+        }
+        
+        .btn:hover {
+          background-color: #2563eb !important;
+        }
+        
+        .btn:disabled {
+          background-color: #9ca3af !important;
+          cursor: not-allowed;
         }
       `}</style>
 
@@ -483,9 +549,9 @@ export default function Home() {
                   <Image 
                     src={tile.src} 
                     alt={tile.alt} 
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="200px"
+                    width={80}
+                    height={80}
+                    style={{ objectFit: 'contain' }}
                   />
                 </div>
                 <div className="title">{tile.title}</div>
