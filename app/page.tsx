@@ -210,7 +210,7 @@ export default function Home() {
         }
         
         .hint {
-          font-size: 12px;
+          font-size: 10px;
           font-weight: 500;
           color: #374151;
           margin-bottom: 0.5rem;
@@ -306,11 +306,10 @@ export default function Home() {
         
         .img-wrap {
           width: 100%;
-          height: 150px;
+          aspect-ratio: 1;
           position: relative;
-          margin-bottom: 8px;
-          background-color: #f3f4f6;
-          border-radius: 4px;
+          margin-bottom: 12px;
+          border-radius: 8px;
           overflow: hidden;
         }
         
@@ -408,23 +407,31 @@ export default function Home() {
         }
         
         .btn {
-          font-size: 12px;
-          font-weight: 500;
-          padding: 12px 24px;
-          background-color: #3b82f6;
+          font-size: 14px;
+          font-weight: 600;
+          padding: 16px 32px;
+          background-color: #090123;
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 8px;
           cursor: pointer;
           margin-top: 20px;
+          transition: all 0.3s ease;
+          text-transform: none;
+          letter-spacing: 0;
         }
         
         .btn:hover {
-          background-color: #2563eb;
+          background-color: #1a0f3a;
+        }
+        
+        .btn:active {
+          background-color: #000011;
         }
         
         .btn:disabled {
-          background-color: #9ca3af;
+          background-color: #f3f4f6;
+          color: #9ca3af;
           cursor: not-allowed;
         }
       `}</style>
