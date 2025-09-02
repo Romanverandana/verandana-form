@@ -34,8 +34,12 @@ export default function FileUploader({ files, setFiles, onUploadError }: FileUpl
       }
     });
     const newFileObjects: FileWithProgress[] = validFiles.map(file => ({
-      id: Date.now() + Math.random(), file, progress: 0, preview: URL.createObjectURL(file)
-    }));
+  id: Date.now() + Math.random(),
+  file,
+  progress: 0,
+  status: 'pending',  // DODAJ TĘ LINIĘ!
+  preview: URL.createObjectURL(file)
+}));
     setFiles(prev => [...prev, ...newFileObjects]);
     newFileObjects.forEach(f => {
         const interval = setInterval(() => {
