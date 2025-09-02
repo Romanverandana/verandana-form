@@ -10,14 +10,27 @@ export interface FileWithProgress {
   uploadedUrl?: string;
 }
 
-// Typ dla stanu formularza
-export interface FormState {
+// Typ dla wartości formularza
+export interface FormValues {
   name: string;
   email: string;
   phone: string;
-  message: string;
-  type: string;
-  files: FileWithProgress[];
+  postal: string;
+  date: string;
+  selectedType: string;
+  comment: string;
+  consent: boolean;
+}
+
+// Typ dla błędów formularza
+export interface FormErrors {
+  [key: string]: string;
+}
+
+// Typ dla stanu formularza
+export interface FormState {
+  values: FormValues;
+  errors: FormErrors;
 }
 
 // Typ dla kafelków wyboru typu
