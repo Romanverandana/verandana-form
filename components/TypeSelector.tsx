@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
-import { TileData } from '../lib/types';
-import styles from '../app/page.module.css';
+import { TileData } from '@/lib/types';
+import styles from '@/app/page.module.css';
 
 interface TypeSelectorProps {
   tilesData: TileData[];

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback, useRef } from 'react';
-import { FileWithProgress } from '../lib/types';
-import styles from '../app/page.module.css';
+import { FileWithProgress } from '@/lib/types';
+import styles from '@/app/page.module.css';
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
