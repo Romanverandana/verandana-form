@@ -42,12 +42,12 @@ export interface TileData {
   alt: string;
 }
 
-// Typ dla powiadomień
-export interface NotificationState {
-  show: boolean;
+// Typ dla powiadomień - może być null lub obiekt
+export type NotificationState = {
+  show?: boolean;
   message: string;
   type: 'success' | 'error' | 'info';
-}
+} | null;
 
 // Typy dla formularza (rozszerzone)
 export interface FormData {
