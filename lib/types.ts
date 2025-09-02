@@ -2,11 +2,12 @@
 
 // Typy dla plików z progresem uploadu
 export interface FileWithProgress {
+  id: number | string;
   file: File;
   progress: number;
   status: 'pending' | 'uploading' | 'completed' | 'error';
+  preview: string;
   error?: string;
-  id?: string;
   uploadedUrl?: string;
 }
 
