@@ -120,7 +120,8 @@ export default function Home() {
     if (submitStatus !== 'idle') return;
     event.preventDefault();
     if (!validateFormOnSubmit()) {
-      setNotification({ type: 'error', message: 'Proszę wypełnić wszystkie wymagane pola poprawnie.' });
+      // ZMIANA TUTAJ: Personalizacja komunikatu
+      setNotification({ type: 'error', message: `${declinedName || 'Drogi użytkowniku'}, proszę, uzupełnij wymagane pola.` }); 
       return;
     }
     setNotification(null);
@@ -132,7 +133,7 @@ export default function Home() {
     try {
       const response = await fetch('/api/submit', { method: 'POST', body: submitData });
       if (!response.ok) throw new Error('Błąd serwera');
-      setNotification({ type: 'success', message: 'Dziękujemy! Zgłoszenie zostało wysłane.' });
+      setNotification({ type: 'success', message: `Dziękujemy, ${declinedName || 'zgłoszenie'} zostało wysłane!` });
       setSubmitStatus('success');
       setTimeout(() => {
         dispatch({ type: 'RESET' });
@@ -142,7 +143,7 @@ export default function Home() {
       }, 4000);
     } catch (error) {
       console.error('Błąd wysyłania formularza:', error);
-      setNotification({ type: 'error', message: 'Wystąpił błąd. Spróbuj ponownie.' });
+      setNotification({ type: 'error', message: 'Wystąpił błąd podczas wysyłania. Spróbuj ponownie.' });
       setSubmitStatus('idle');
     }
   };
