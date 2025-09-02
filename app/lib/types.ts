@@ -16,6 +16,7 @@ export interface FileWithProgress {
   id: number;
   file: File;
   progress: number;
+  preview?: string;
 }
 
 export interface TileData {

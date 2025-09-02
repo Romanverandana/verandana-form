@@ -1,20 +1,30 @@
+// ======================================================= //
+// PEŁNA ZAWARTOŚĆ PLIKU /components/TypeSelector.tsx      //
+//          (z opcjonalną personalizacją)                  //
+// ======================================================= //
+
 'use client';
 import Image from 'next/image';
-import { TileData } from '@/lib/types';
-import styles from '@/app/page.module.css';
+import { TileData } from '../lib/types';
+import styles from '../app/page.module.css';
 
 interface TypeSelectorProps {
   tilesData: TileData[];
   selectedValue: string;
   onSelect: (value: string) => void;
   error?: string;
+  name?: string; // ZMIANA: Dodajemy opcjonalną właściwość 'name'
 }
 
-export default function TypeSelector({ tilesData, selectedValue, onSelect, error }: TypeSelectorProps) {
+export default function TypeSelector({ tilesData, selectedValue, onSelect, error, name }: TypeSelectorProps) {
   return (
     <div>
-      <div className={styles.sectionTitle}>Wybierz typ konstrukcji, który Cię interesuje *</div>
-      {error && <span className={styles.errorMessageCentered}>{error}</span>}
+      {/* ZMIANA: Nagłówek jest teraz dynamiczny */}
+      <h2 className={styles.sectionTitle}>
+        {name ? `${name}, jaki typ Cię interesuje? *` : 'Jaki typ konstrukcji Cię interesuje? *'}
+      </h2>
+      
+      {error && <span className={styles.errorMessage} style={{textAlign: 'center', display: 'block', marginBottom: '15px'}}>{error}</span>}
       <div className={styles.tiles}>
         {tilesData.map(tile => (
           <button
@@ -25,12 +35,11 @@ export default function TypeSelector({ tilesData, selectedValue, onSelect, error
             aria-pressed={selectedValue === tile.value}
           >
             <div className={styles.imgWrap}>
-              <Image
-                src={tile.src}
-                alt={tile.alt}
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="180px"
+              <Image 
+                src={tile.src} 
+                alt={tile.alt} 
+                fill 
+                sizes="(max-width: 768px) 50vw, 20vw"
               />
             </div>
             <div className={styles.tileTitle}>{tile.title}</div>

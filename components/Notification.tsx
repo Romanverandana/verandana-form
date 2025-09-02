@@ -9,9 +9,9 @@ interface NotificationProps {
 
 export default function Notification({ notification, onClose }: NotificationProps) {
   if (!notification || !notification.message) return null;
-
+  const notificationTypeClass = notification.type ? styles[notification.type] : '';
   return (
-    <div className={`${styles.notification} ${styles[notification.type || '']}`}>
+    <div className={`${styles.notification} ${notificationTypeClass}`}>
       <p>{notification.message}</p>
       <button onClick={onClose} aria-label="Zamknij powiadomienie">×</button>
     </div>
