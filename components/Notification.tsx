@@ -1,6 +1,6 @@
 'use client';
-import { NotificationState } from '@/lib/types';
-import styles from '@/app/page.module.css';
+import { NotificationState } from '../lib/types';
+import styles from '../app/page.module.css';
 
 interface NotificationProps {
   notification: NotificationState | null;
