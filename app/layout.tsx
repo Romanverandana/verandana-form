@@ -1,5 +1,6 @@
 import './globals.css';
 import { Montserrat, Playfair_Display } from 'next/font/google';
+import 'react-phone-input-2/lib/style.css';
 
 // Konfiguracja Montserrat jako głównej czcionki
 const montserrat = Montserrat({
