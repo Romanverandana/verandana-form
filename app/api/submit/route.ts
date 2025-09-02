@@ -2,24 +2,22 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
+    // Ta linia odczytuje dane z formularza
     const formData = await request.formData();
     const name = formData.get('name');
-    const files = formData.getAll('files');
 
-    console.log('Otrzymano dane:', { name, filesCount: files.length });
-    
-    // Symulacja pracy serwera
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // W logach serwera (na Vercelu) zobaczymy, że dane dotarły
+    console.log(`Otrzymano formularz od: ${name}`);
 
-    // Symulacja potencjalnego błędu
-    if (name === 'test-error') {
-        return NextResponse.json({ message: 'Symulowany błąd serwera.' }, { status: 500 });
-    }
+    // Symulujemy pracę serwera
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
+    // Odsyłamy odpowiedź "sukces" do przeglądarki
     return NextResponse.json({ message: 'Dane otrzymane pomyślnie' }, { status: 200 });
 
   } catch (error) {
-    console.error(error);
+    console.error("Błąd w /api/submit:", error);
+    // W razie błędu odsyłamy informację o błędzie serwera
     return NextResponse.json({ message: 'Wewnętrzny błąd serwera.' }, { status: 500 });
   }
 }

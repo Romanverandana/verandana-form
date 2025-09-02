@@ -1,19 +1,10 @@
 :root {
-  --color-text-primary: #111827;
-  --color-text-secondary: #6b7280;
-  --color-background-primary: #f9fafb;
-  --color-background-shell: #ffffff;
-  --color-border: #d1d5db;
-  --color-brand-navy: #090123;
-  --color-brand-salmon: #fd9155;
-  --color-success: #16a34a;
-  --color-error: #dc2626;
-  --border-radius-base: 12px;
-  --border-radius-small: 8px;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --color-text-primary: #111827; --color-text-secondary: #6b7280; --color-background-primary: #f9fafb;
+  --color-background-shell: #ffffff; --color-border: #d1d5db; --color-brand-navy: #090123;
+  --color-brand-salmon: #fd9155; --color-success: #16a34a; --color-error: #dc2626;
+  --border-radius-base: 12px; --border-radius-small: 8px; --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
-
 body { background-color: var(--color-background-primary); margin: 0; font-family: var(--font-montserrat); }
 .shell { max-width: 900px; margin: 60px auto; padding: 50px; background-color: var(--color-background-shell); border-radius: var(--border-radius-base); box-shadow: var(--shadow-md); color: var(--color-text-primary); }
 .mainTitle { font-size: 36px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: var(--color-text-primary); text-align: center; font-family: var(--font-playfair-display); }
@@ -57,6 +48,12 @@ body { background-color: var(--color-background-primary); margin: 0; font-family
 .phoneInput input:focus { box-shadow: none; border-color: var(--color-border); }
 .phoneInput .PhoneInputCountry { background-color: #ffffff; border: 1px solid var(--color-border); border-right: none; padding: 0 10px; border-top-left-radius: var(--border-radius-small); border-bottom-left-radius: var(--border-radius-small); transition: border-color 0.2s ease; }
 .phoneInputWrapper:focus-within .PhoneInputCountry, .phoneInputWrapper:focus-within input { border-color: var(--color-brand-navy); }
+.notification { padding: 16px; border-radius: var(--border-radius-base); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: var(--shadow-md); }
+.notification.success { background-color: var(--color-success); }
+.notification.error { background-color: var(--color-error); }
+.notification p { margin: 0; font-weight: 500; font-size: 16px; }
+.notification button { background: none; border: none; color: white; font-size: 24px; line-height: 1; cursor: pointer; opacity: 0.8; transition: opacity 0.2s ease; }
+.notification button:hover { opacity: 1; }
 .errorMessage { font-size: 12px; font-weight: 400; color: var(--color-error); display: block; margin-top: 6px; }
 .progress { height: 100%; background-color: var(--color-brand-salmon); width: 0%; transition: width 0.3s ease-out; }
 .progressBar { height: 6px; background-color: #e5e7eb; border-radius: 3px; overflow: hidden; margin-top: 8px; }
@@ -64,24 +61,5 @@ body { background-color: var(--color-background-primary); margin: 0; font-family
 .fileRowWithPreview { display: flex; align-items: center; gap: 15px; }
 .fileInfo { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 .fileName { font-size: 14px; font-weight: 400; color: #374151; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 15px; }
-
-/* --- ZMIANA: NOWE, ELEGANCKIE STYLE POWIADOMIEŃ --- */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes notificationPulseError { 0% { box-shadow: 0 0 0 0 rgba(253, 145, 85, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(253, 145, 85, 0); } 100% { box-shadow: 0 0 0 0 rgba(253, 145, 85, 0); } }
-.notification { padding: 16px 20px; border-radius: var(--border-radius-small); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-md); animation: fadeIn 0.3s ease-out; }
-.notification p { margin: 0; font-weight: 500; font-size: 14px; }
-.notification button { background: none; border: none; font-size: 20px; line-height: 1; cursor: pointer; opacity: 0.6; transition: opacity 0.2s ease; }
-.notification button:hover { opacity: 1; }
-.notification.success { background-color: #f0fff4; border: 1px solid #bbf7d0; color: #22c55e; }
-.notification.success button { color: #22c55e; }
-.notification.error {
-  background-color: #fff7f5; /* Bardzo jasny łosoś */
-  border: 1px solid var(--color-brand-salmon);
-  color: #c2410c; /* Ciemniejszy, czytelny pomarańczowy */
-  animation: notificationPulseError 2s infinite; /* Pulsująca obwódka */
-}
-.notification.error button { color: #c2410c; }
-/* --- KONIEC ZMIAN --- */
-
 @media (max-width: 900px) { .tiles { grid-template-columns: repeat(3, 1fr); } .shell { margin: 20px; padding: 30px; } }
 @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, 1fr); } .grid.two { grid-template-columns: 1fr; } }

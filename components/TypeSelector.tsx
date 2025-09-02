@@ -1,8 +1,3 @@
-// ======================================================= //
-// PEŁNA ZAWARTOŚĆ PLIKU /components/TypeSelector.tsx      //
-//          (z opcjonalną personalizacją)                  //
-// ======================================================= //
-
 'use client';
 import Image from 'next/image';
 import { TileData } from '../lib/types';
@@ -13,13 +8,12 @@ interface TypeSelectorProps {
   selectedValue: string;
   onSelect: (value: string) => void;
   error?: string;
-  name?: string; // ZMIANA: Dodajemy opcjonalną właściwość 'name'
+  name?: string;
 }
 
 export default function TypeSelector({ tilesData, selectedValue, onSelect, error, name }: TypeSelectorProps) {
   return (
     <div>
-      {/* ZMIANA: Nagłówek jest teraz dynamiczny */}
       <h2 className={styles.sectionTitle}>
         {name ? `${name}, jaki typ Cię interesuje? *` : 'Jaki typ konstrukcji Cię interesuje? *'}
       </h2>

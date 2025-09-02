@@ -5,9 +5,7 @@ import { Montserrat, Playfair_Display } from 'next/font/google';
 import styles from './page.module.css';
 
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
 
-import { declineNameVocative } from '../lib/declension'; 
 import { FormState, FileWithProgress, TileData, NotificationState } from '../lib/types';
 import TypeSelector from '../components/TypeSelector';
 import FileUploader from '../components/FileUploader';
@@ -17,6 +15,18 @@ const montserrat = Montserrat({ subsets: ['latin', 'latin-ext'], weight: ['400',
 const playfair_Display = Playfair_Display({ subsets: ['latin', 'latin-ext'], weight: ['700'], display: 'swap' });
 
 const GlobalStyles = ` body { --font-montserrat: ${montserrat.style.fontFamily}; --font-playfair-display: ${playfair_Display.style.fontFamily}; } `;
+
+const declineNameVocative = (name: string): string => {
+  if (typeof name !== 'string' || !name) return '';
+  const capitalized = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  const lastLetter = capitalized.slice(-1);
+  if (lastLetter === 'a') { return capitalized.slice(0, -1) + 'o'; }
+  if (capitalized.endsWith('ek') || capitalized.endsWith('ec')) { return capitalized.slice(0, -2) + 'ku'; }
+  if (['k', 'g', 'h'].includes(lastLetter)) { return capitalized + 'u'; }
+  if (['c', 'cz', 'dz', 'dż', 'l', 'ł', 'ń', 'rz', 'sz', 'ś', 'z', 'ż', 'ź', 'j'].includes(lastLetter)) { return capitalized + 'u'; }
+  if (['b', 'd', 'f', 'm', 'n', 'p', 'r', 's', 't', 'w'].includes(lastLetter)) { return capitalized + 'ie'; }
+  return capitalized;
+};
 
 const tilesData: TileData[] = [
   { value: "home-extension", title: "Home Extension", desc: "Najwyższy standard, płaski dach, różne kształty świetlików, pełna integracja z domem", src: "/images/forms/home-extension-day.webp", alt: "Home Extension" },
@@ -42,9 +52,7 @@ function formReducer(state: FormState, action: FormAction): FormState {
     case 'UPDATE_FIELD': {
       const newValues = { ...state.values, [action.field]: action.value };
       const newErrors = { ...state.errors };
-      if (newErrors[action.field as keyof FormState['values']]) {
-        delete newErrors[action.field as keyof FormState['values']];
-      }
+      if (newErrors[action.field as keyof FormState['values']]) { delete newErrors[action.field as keyof FormState['values']]; }
       return { values: newValues, errors: newErrors };
     }
     case 'SET_ERRORS':
@@ -120,8 +128,7 @@ export default function Home() {
     if (submitStatus !== 'idle') return;
     event.preventDefault();
     if (!validateFormOnSubmit()) {
-      // ZMIANA TUTAJ: Personalizacja komunikatu
-      setNotification({ type: 'error', message: `${declinedName || 'Drogi użytkowniku'}, proszę, uzupełnij wymagane pola.` }); 
+      setNotification({ type: 'error', message: `${declinedName || 'Drogi użytkowniku'}, proszę, uzupełnij wymagane pola.` });
       return;
     }
     setNotification(null);
