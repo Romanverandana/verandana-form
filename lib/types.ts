@@ -1,3 +1,4 @@
+// lib/types.ts
 export interface FormState {
   values: {
     name: string;
@@ -13,10 +14,12 @@ export interface FormState {
 }
 
 export interface FileWithProgress {
-  id: number;
+  id: string;
   file: File;
   progress: number;
   preview?: string;
+  status?: 'uploading' | 'completed' | 'error';
+  error?: string;
 }
 
 export interface TileData {
@@ -32,4 +35,18 @@ export type NotificationType = 'success' | 'error' | null;
 export interface NotificationState {
   type: NotificationType;
   message: string;
+}
+
+export interface UploadResponse {
+  success: boolean;
+  message: string;
+  fileId?: string;
+  error?: string;
+}
+
+export interface FormData {
+  name: string;
+  email: string;
+  message: string;
+  files: File[];
 }
