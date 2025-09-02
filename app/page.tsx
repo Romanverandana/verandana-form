@@ -163,8 +163,7 @@ export default function Home() {
             <input id="date" name="date" type="date" value={formState.values.date} onChange={(e) => handleInputChange('date', e.target.value)} min={new Date().toISOString().split('T')[0]} onKeyDown={handleKeyDown} />
           </div>
 
-          <FileUploader files={selectedFiles} setFiles={setSelectedFiles} onUploadError={(message) => setNotification({ type: 'error', message })} />
-          
+          <FileUploader onFilesChange={setSelectedFiles} />          
           <div style={{ marginTop: "20px" }}>
             <label className={styles.hint} htmlFor="comment">Dodatkowe informacje</label>
             <textarea id="comment" name="comment" placeholder="Wymiary, kolor, specjalne wymagania..." value={formState.values.comment} onChange={(e) => handleInputChange('comment', e.target.value as string)} onKeyDown={handleKeyDown} />
