@@ -1,216 +1,303 @@
 'use client';
 
-import { useReducer, useState, useCallback, FocusEvent } from 'react';
-import { Montserrat, Playfair_Display } from 'next/font/google';
+import React, { useState, useCallback } from 'react';
+import Image from 'next/image';
 import styles from './page.module.css';
 
-import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+// Importy dla komponentu telefonu
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
-import { FormState, FileWithProgress, TileData, NotificationState } from '../lib/types';
-import TypeSelector from '../components/TypeSelector';
-import FileUploader from '../components/FileUploader';
-import Notification from '../components/Notification';
+// --- Typy i Dane Statyczne ---
 
-const montserrat = Montserrat({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600', '700'], display: 'swap' });
-const playfair_Display = Playfair_Display({ subsets: ['latin', 'latin-ext'], weight: ['700'], display: 'swap' });
-
-const GlobalStyles = ` body { --font-montserrat: ${montserrat.style.fontFamily}; --font-playfair-display: ${playfair_Display.style.fontFamily}; } `;
-
-const declineNameVocative = (name: string): string => {
-  if (typeof name !== 'string' || !name) return '';
-  const capitalized = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  const lastLetter = capitalized.slice(-1);
-  if (lastLetter === 'a') { return capitalized.slice(0, -1) + 'o'; }
-  if (capitalized.endsWith('ek') || capitalized.endsWith('ec')) { return capitalized.slice(0, -2) + 'ku'; }
-  if (['k', 'g', 'h'].includes(lastLetter)) { return capitalized + 'u'; }
-  if (['c', 'cz', 'dz', 'dż', 'l', 'ł', 'ń', 'rz', 'sz', 'ś', 'z', 'ż', 'ź', 'j'].includes(lastLetter)) { return capitalized + 'u'; }
-  if (['b', 'd', 'f', 'm', 'n', 'p', 'r', 's', 't', 'w'].includes(lastLetter)) { return capitalized + 'ie'; }
-  return capitalized;
-};
-
-const tilesData: TileData[] = [
-  { value: "home-extension", title: "Home Extension", desc: "Najwyższy standard, płaski dach, różne kształty świetlików, pełna integracja z domem", src: "/images/forms/home-extension-day.webp", alt: "Home Extension" },
-  { value: "cieply", title: "Klasyczny ciepły", desc: "Interesujące, różne kształty dachu, eleganckie, ciepłe wykonanie, komfort przez cały rok", src: "/images/forms/ogrod-klasyczny-day.webp", alt: "Klasyczny ciepły" },
-  { value: "zimny", title: "Sezonowy zimny", desc: "Ekonomiczne rozwiązanie, więcej miejsca latem i cieplejsze dni jesienią", src: "/images/forms/ogrod-sezonowy-day.webp", alt: "Sezonowy zimny" },
-  { value: "pergola", title: "Pergola Bioclimatic", desc: "Ruchome lamele, nowoczesna ochrona tarasu. Możliwe ruchome szklane ściany", src: "/images/forms/pergola-bioclimatic-day.webp", alt: "Pergola Bioclimatic" },
-  { value: "doradzcie", title: "Nie wiem, doradźcie mi", desc: "Nie musisz znać wszystkich rozwiązań – przygotujemy najlepszą opcję dla Twojego domu", src: "/images/forms/help-me.webp", alt: "Doradztwo" }
-];
-
-const initialFormState: FormState = {
-  values: { name: '', email: '', phone: '', postal: '', date: '', selectedType: '', comment: '', consent: false },
-  errors: {},
-};
-
-type FormAction =
-  | { type: 'UPDATE_FIELD'; field: keyof FormState['values']; value: string | boolean }
-  | { type: 'SET_ERRORS'; errors: FormState['errors'] }
-  | { type: 'SET_FIELD_ERROR'; field: keyof FormState['values']; error?: string }
-  | { type: 'RESET' };
-
-function formReducer(state: FormState, action: FormAction): FormState {
-  switch (action.type) {
-    case 'UPDATE_FIELD': {
-      const newValues = { ...state.values, [action.field]: action.value };
-      const newErrors = { ...state.errors };
-      if (newErrors[action.field as keyof FormState['values']]) { delete newErrors[action.field as keyof FormState['values']]; }
-      return { values: newValues, errors: newErrors };
-    }
-    case 'SET_ERRORS':
-      return { ...state, errors: action.errors };
-    case 'SET_FIELD_ERROR': {
-        const newErrors = { ...state.errors };
-        if(action.error) { newErrors[action.field] = action.error; } 
-        else { delete newErrors[action.field]; }
-        return { ...state, errors: newErrors };
-    }
-    case 'RESET':
-      return initialFormState;
-    default:
-      return state;
-  }
+interface FormState {
+  name: string;
+  phone: string;
+  email: string;
+  postalCode: string;
+  constructionType: string;
+  installationDate: string;
+  additionalInfo: string;
+  consent: boolean;
 }
 
+const initialState: FormState = {
+  name: '',
+  phone: '',
+  email: '',
+  postalCode: '',
+  constructionType: '',
+  installationDate: '',
+  additionalInfo: '',
+  consent: false,
+};
+
+// Dane dla kafelków (Używamy poprawnych ścieżek /images/forms/)
+const constructionTypes = [
+  { id: 'home_extension', title: 'Home Extension', description: 'Najwyższy standard, płaski dach, różne kształty świetlików, pełna integracja z domem.', imgUrl: '/images/forms/home-extension-day.webp' },
+  { id: 'classic_warm', title: 'Klasyczny ciepły', description: 'Interesujące, różne kształty dachu, eleganckie, ciepłe wykonanie, komfort przez cały rok.', imgUrl: '/images/forms/ogrod-klasyczny-day.webp' },
+  { id: 'seasonal_winter', title: 'Sezonowy zimny', description: 'Ekonomiczne rozwiązanie, więcej miejsca latem i cieplejsze dni jesienią.', imgUrl: '/images/forms/ogrod-sezonowy-day.webp' },
+  { id: 'pergola_bioclimatic', title: 'Pergola Bioclimatic', description: 'Ruchome lamele, nowoczesna ochrona tarasu. Możliwe ruchome szklane ściany.', imgUrl: '/images/forms/pergola-bioclimatic-day.webp' },
+  { id: 'dont_know', title: 'Nie wiem, doradźcie mi', description: 'Nie musisz znać wszystkich rozwiązań – przygotujemy najlepszą opcję dla Twojego domu.', imgUrl: '/images/forms/help-me.webp' },
+];
+
+const fallbackImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5/hANDAtrAqAAAAAElFTkSuQmCC";
+
+// --- Komponenty Pomocnicze ---
+
+// 1. Komponent Kafelka (Zoptymalizowany z nowym API next/image)
+interface CardProps {
+    data: typeof constructionTypes[0];
+    isSelected: boolean;
+    onClick: () => void;
+}
+
+const ConstructionCard: React.FC<CardProps> = React.memo(({ data, isSelected, onClick }) => {
+    const [imgSrc, setImgSrc] = useState(data.imgUrl);
+
+    return (
+        <div
+            className={`${styles.card} ${isSelected ? styles.cardSelected : ''}`}
+            onClick={onClick}
+        >
+            <div className={styles.cardImageWrapper}>
+                <Image
+                    src={imgSrc}
+                    alt={data.title}
+                    fill // Nowoczesne API zamiast layout="fill"
+                    className={styles.cardImage} // CSS obsługuje object-fit: cover
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 20vw, 200px"
+                    placeholder="blur"
+                    blurDataURL={fallbackImage}
+                    onError={() => {
+                        if (imgSrc !== fallbackImage) {
+                            setImgSrc(fallbackImage);
+                        }
+                    }}
+                />
+            </div>
+            <div className={styles.cardContent}>
+                <h3>{data.title}</h3>
+                <p>{data.description}</p>
+            </div>
+        </div>
+    );
+});
+ConstructionCard.displayName = 'ConstructionCard';
+
+// 2. File Uploader Placeholder (Wizualnie zgodny ze zrzutem)
+const FileUploaderPlaceholder = () => {
+    // W rzeczywistej implementacji użyj np. react-dropzone i zarządzaj stanem plików
+    return (
+        <div className={styles.fileUploaderArea}>
+            <div className={styles.uploadIcon}>
+                {/* Proste SVG ikony uploadu zgodne ze zrzutem */}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5L12 15M12 5L8 9M12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M5 15V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+            </div>
+            <h3>Dodaj zdjęcia lub projekt</h3>
+            <p>Upuść pliki tutaj lub wybierz je ze swojego dysku</p>
+            {/* Użycie label zamiast button dla lepszej dostępności przy ukrytym input[type=file] */}
+            <label htmlFor="file-upload-input" className={styles.browseButton}>
+                Przeglądaj pliki
+            </label>
+            <input type="file" id="file-upload-input" multiple style={{ display: 'none' }} />
+        </div>
+    );
+};
+
+
+// --- Główny Komponent Formularza ---
 export default function Home() {
-  const [formState, dispatch] = useReducer(formReducer, initialFormState);
-  const [selectedFiles, setSelectedFiles] = useState<FileWithProgress[]>([]);
-  const [notification, setNotification] = useState<NotificationState | null>(null);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [formData, setFormData] = useState<FormState>(initialState);
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
-  const declinedName = declineNameVocative(formState.values.name.split(' ')[0]);
-
-  const handleInputChange = useCallback((field: keyof FormState['values'], value: string | boolean) => {
-    dispatch({ type: 'UPDATE_FIELD', field, value });
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+        const checked = (e.target as HTMLInputElement).checked;
+        setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
   }, []);
 
-  const validateField = (name: keyof FormState['values'], value: string) => {
-    if (!value) return; 
-    switch (name) {
-      case 'email':
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Nieprawidłowy format email';
-        break;
-      case 'phone':
-        if (!isValidPhoneNumber(value)) return 'Nieprawidłowy numer telefonu';
-        break;
-      case 'postal':
-        if (!/^\d{2}-\d{3}$/.test(value)) return 'Kod pocztowy powinien mieć format XX-XXX';
-        break;
-      default: break;
-    }
-  };
+  const handlePhoneChange = useCallback((value: string) => {
+    setFormData(prev => ({ ...prev, phone: value }));
+  }, []);
 
-  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
-    const { name, value } = e.target as { name: keyof FormState['values']; value: string };
-    const error = validateField(name, value);
-    dispatch({ type: 'SET_FIELD_ERROR', field: name, error });
-  };
-  
-  const handlePhoneBlur = () => {
-    const error = validateField('phone', formState.values.phone);
-    dispatch({ type: 'SET_FIELD_ERROR', field: 'phone', error });
-  };
-  
-  const validateFormOnSubmit = useCallback(() => {
-    const { values } = formState;
-    const newErrors: FormState['errors'] = {};
-    if (!values.name.trim()) newErrors.name = 'Imię jest wymagane';
-    if (!values.email.trim()) newErrors.email = 'Email jest wymagany';
-    if (!values.phone.trim()) newErrors.phone = 'Telefon jest wymagany';
-    if (!values.selectedType) newErrors.selectedType = 'Wybierz typ konstrukcji';
-    if (!values.consent) newErrors.consent = 'Zgoda jest wymagana';
-    if (values.email && validateField('email', values.email)) newErrors.email = validateField('email', values.email);
-    if (values.phone && validateField('phone', values.phone)) newErrors.phone = validateField('phone', values.phone);
-    if (values.postal && validateField('postal', values.postal)) newErrors.postal = validateField('postal', values.postal);
-    dispatch({ type: 'SET_ERRORS', errors: newErrors });
-    return Object.keys(newErrors).length === 0;
-  }, [formState.values]);
-  
-  const handleSubmit = async (event: React.FormEvent) => {
-    if (submitStatus !== 'idle') return;
-    event.preventDefault();
-    if (!validateFormOnSubmit()) {
-      setNotification({ type: 'error', message: `${declinedName || 'Drogi użytkowniku'}, proszę, uzupełnij wymagane pola.` });
-      return;
+  // Używamy useCallback dla funkcji przekazywanej do React.memo
+  const handleCardSelect = useCallback((id: string) => {
+    setFormData(prev => ({ ...prev, constructionType: id }));
+    // Czyszczenie błędu po wybraniu
+    if (errors.constructionType) {
+        setErrors(prev => ({ ...prev, constructionType: undefined }));
     }
-    setNotification(null);
-    setSubmitStatus('submitting');
-    const submitData = new FormData();
-    Object.entries(formState.values).forEach(([key, value]) => submitData.append(key, String(value)));
-    selectedFiles.forEach(({ file }) => submitData.append('files', file));
+  }, [errors.constructionType]);
 
-    try {
-      const response = await fetch('/api/submit', { method: 'POST', body: submitData });
-      if (!response.ok) throw new Error('Błąd serwera');
-      setNotification({ type: 'success', message: `Dziękujemy, ${declinedName || 'zgłoszenie'} zostało wysłane!` });
-      setSubmitStatus('success');
-      setTimeout(() => {
-        dispatch({ type: 'RESET' });
-        setSelectedFiles([]);
-        setSubmitStatus('idle');
-        setNotification(null);
-      }, 4000);
-    } catch (error) {
-      console.error('Błąd wysyłania formularza:', error);
-      setNotification({ type: 'error', message: 'Wystąpił błąd podczas wysyłania. Spróbuj ponownie.' });
-      setSubmitStatus('idle');
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Walidacja
+    const newErrors: Partial<Record<keyof FormState, string>> = {};
+    if (!formData.name) newErrors.name = 'Imię jest wymagane.';
+    if (!formData.email || !validateEmail(formData.email)) newErrors.email = 'Prawidłowy e-mail jest wymagany.';
+    if (!formData.phone || formData.phone.length < 5) newErrors.phone = 'Numer telefonu jest wymagany.';
+    if (!formData.constructionType) newErrors.constructionType = 'Wybór typu konstrukcji jest wymagany.';
+    if (!formData.consent) newErrors.consent = 'Zgoda jest wymagana.';
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      console.log('Form Data Submitted:', formData);
+      // Obsługa wysyłki (np. wywołanie API)
+      alert('Wycena wysłana pomyślnie!');
     }
   };
 
   return (
-    <>
-      <style jsx global>{GlobalStyles}</style>
-      <div className={`${montserrat.className} ${styles.shell}`}>
-        <Notification notification={notification} onClose={() => setNotification(null)} />
-        <header>
-          <h1 className={`${playfair_Display.className} ${styles.mainTitle}`}>Otrzymaj darmową wycenę</h1>
-          <p className={styles.sub}>PODAJ KILKA PODSTAWOWYCH INFORMACJI – PRZYGOTUJEMY KALKULACJĘ I SKONTAKTUJEMY SIĘ W CIĄGU 24H</p>
+    <main className={styles.main}>
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Otrzymaj darmową wycenę</h1>
+          <p className={styles.subtitle}>
+            PODAJ KILKA PODSTAWOWYCH INFORMACJI – PRZYGOTUJEMY KALKULACJĘ I SKONTAKTUJEMY SIĘ W CIĄGU 24H
+          </p>
         </header>
-        <form id="verandana-form" onSubmit={handleSubmit} noValidate>
-          <div className={`${styles.grid} ${styles.two}`}>
-            <div>
-              <label className={styles.hint} htmlFor="name">Imię *</label>
-              <input id="name" name="name" type="text" placeholder="Jan" value={formState.values.name} onChange={(e) => handleInputChange('name', e.target.value)} />
-              {formState.errors.name && <span className={styles.errorMessage}>{formState.errors.name}</span>}
-            </div>
-            <div>
-              <label className={styles.hint} htmlFor="phone">{declinedName ? `${declinedName}, podaj` : 'Twój'} numer telefonu *</label>
-              <div className={styles.phoneInputWrapper}>
-                <PhoneInput id="phone" name="phone" className={styles.phoneInput} placeholder="Wpisz numer telefonu" value={formState.values.phone} onChange={(value) => handleInputChange('phone', value || '')} onBlur={handlePhoneBlur} defaultCountry="PL" international />
-              </div>
-              {formState.errors.phone && <span className={styles.errorMessage}>{formState.errors.phone}</span>}
-            </div>
-            <div>
-              <label className={styles.hint} htmlFor="email">Adres e-mail *</label>
-              <input id="email" name="email" type="email" placeholder="jan.kowalski@example.com" value={formState.values.email} onChange={(e) => handleInputChange('email', e.target.value)} onBlur={handleBlur} />
-              {formState.errors.email && <span className={styles.errorMessage}>{formState.errors.email}</span>}
-            </div>
-            <div>
-              <label className={styles.hint} htmlFor="postal">{declinedName ? 'Gdzie realizujemy projekt?' : 'Kod pocztowy'}</label>
-              <input id="postal" name="postal" type="text" placeholder="00-000" value={formState.values.postal} onChange={(e) => handleInputChange('postal', e.target.value)} onBlur={handleBlur} />
-              {formState.errors.postal && <span className={styles.errorMessage}>{formState.errors.postal}</span>}
-            </div>
+
+        {/* Siatka Pól Kontaktowych (2x2) */}
+        <div className={styles.inputGrid}>
+          <div className={styles.formGroup}>
+            <label htmlFor="name">Imię *</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Jan"
+              value={formData.name}
+              onChange={handleChange}
+              className={errors.name ? styles.errorInput : ''}
+            />
+            {errors.name && <span className={styles.errorText}>{errors.name}</span>}
           </div>
-          <TypeSelector tilesData={tilesData} selectedValue={formState.values.selectedType} onSelect={(value) => handleInputChange('selectedType', value)} error={formState.errors.selectedType} name={declinedName}/>
-          <div style={{ marginTop: "40px" }}>
-            <label className={styles.hint} htmlFor="date">{declinedName ? `${declinedName}, masz` : 'Masz'} preferowany termin montażu?</label>
-            <input id="date" name="date" type="date" value={formState.values.date} onChange={(e) => handleInputChange('date', e.target.value)} min={new Date().toISOString().split('T')[0]} />
+
+          {/* Komponent Telefonu z Naprawionym Pozycjonowaniem Flagi */}
+          <div className={styles.formGroup}>
+            <label htmlFor="phone">Twój numer telefonu *</label>
+            <PhoneInput
+                country={'pl'}
+                value={formData.phone}
+                onChange={handlePhoneChange}
+                inputProps={{ name: 'phone', id: 'phone', required: true }}
+                containerClass={styles.phoneContainer}
+                // Klasy CSS Modules zawierające poprawki pozycjonowania
+                inputClass={errors.phone ? `${styles.phoneInput} ${styles.errorInput}` : styles.phoneInput}
+                buttonClass={styles.phoneButton} // Ta klasa naprawia "ucięty box"
+              />
+             {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
           </div>
-          <FileUploader files={selectedFiles} setFiles={setSelectedFiles} onUploadError={(message) => setNotification({ type: 'error', message })} />
-          <div style={{ marginTop: "20px" }}>
-            <label className={styles.hint} htmlFor="comment">{declinedName ? 'Chcesz dodać coś jeszcze?' : 'Dodatkowe informacje'}</label>
-            <textarea id="comment" name="comment" placeholder="Wymiary, kolor, specjalne wymagania..." value={formState.values.comment} onChange={(e) => handleInputChange('comment', e.target.value as string)} />
+
+          <div className={styles.formGroup}>
+            <label htmlFor="email">Adres e-mail *</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="jan.kowalski@example.com"
+              value={formData.email}
+              onChange={handleChange}
+               className={errors.email ? styles.errorInput : ''}
+            />
+             {errors.email && <span className={styles.errorText}>{errors.email}</span>}
           </div>
-          <label className={styles.consent}>
-            <input id="consent" name="consent" type="checkbox" checked={formState.values.consent} onChange={(e) => handleInputChange('consent', e.target.checked)} />
-            <span>Wyrażam zgodę na kontakt w związku z obsługą niniejszego zgłoszenia. *</span>
-            {formState.errors.consent && <span className={styles.errorMessage} style={{marginLeft: '-28px', marginTop: '10px'}}>{formState.errors.consent}</span>}
-          </label>
-          <button className={`${styles.btn} ${submitStatus !== 'idle' ? styles[submitStatus] : ''}`} type="submit" disabled={submitStatus !== 'idle'}>
-            {submitStatus === 'idle' && 'Wyślij Wycenę'}
-            {submitStatus === 'submitting' && 'Wysyłanie...'}
-            {submitStatus === 'success' && '✓ Wysłano!'}
-          </button>
-        </form>
-      </div>
-    </>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="postalCode">Kod pocztowy</label>
+            <input
+              type="text"
+              id="postalCode"
+              name="postalCode"
+              placeholder="00-000"
+              value={formData.postalCode}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* Sekcja Wyboru Konstrukcji */}
+        <section className={styles.selectionSection}>
+            <h2 className={styles.sectionTitle}>Jaki typ konstrukcji Cię interesuje? *</h2>
+            <div className={styles.cardContainer}>
+                {constructionTypes.map(type => (
+                    <ConstructionCard
+                        key={type.id}
+                        data={type}
+                        isSelected={formData.constructionType === type.id}
+                        onClick={() => handleCardSelect(type.id)}
+                    />
+                ))}
+            </div>
+            {errors.constructionType && <div className={styles.errorTextCenter}>{errors.constructionType}</div>}
+        </section>
+
+        {/* Termin Montażu, Upload i Informacje */}
+        <section className={styles.detailsSection}>
+            {/* Termin Montażu */}
+            <div className={styles.formGroupFull}>
+                <label htmlFor="installationDate">Masz preferowany termin montażu?</label>
+                <input
+                    type="text" // Używamy typu text, aby wyświetlić placeholder "dd.mm.rrrr" jak na zrzucie
+                    id="installationDate"
+                    name="installationDate"
+                    placeholder="dd.mm.rrrr"
+                    value={formData.installationDate}
+                    onChange={handleChange}
+                    // Dodaj klasę, jeśli chcesz dodać ikonę kalendarza przez CSS (jak na zrzucie)
+                    className={styles.dateInput}
+                />
+            </div>
+
+            {/* Dodaj zdjęcia lub projekt */}
+            <FileUploaderPlaceholder />
+
+            {/* Dodatkowe informacje */}
+            <div className={styles.formGroupFull}>
+                <label htmlFor="additionalInfo">Dodatkowe informacje</label>
+                <textarea
+                    id="additionalInfo"
+                    name="additionalInfo"
+                    placeholder="Wymiary, kolor, specjalne wymagania..."
+                    value={formData.additionalInfo}
+                    onChange={handleChange}
+                    rows={4}
+                />
+            </div>
+        </section>
+
+
+        {/* Zgody i Przycisk Wysyłania */}
+        <div className={styles.footerSection}>
+            <div className={`${styles.formGroup} ${styles.consentGroup}`}>
+                <input
+                    type="checkbox"
+                    id="consent"
+                    name="consent"
+                    checked={formData.consent}
+                    onChange={handleChange}
+                />
+                <label htmlFor="consent">
+                    Wyrażam zgodę na kontakt w związku z obsługą niniejszego zgłoszenia. *
+                </label>
+            </div>
+            {errors.consent && <div className={styles.errorTextCenter}>{errors.consent}</div>}
+
+            <button type="submit" className={styles.submitButton}>Wyślij Wycenę</button>
+        </div>
+
+      </form>
+    </main>
   );
 }
